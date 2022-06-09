@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerShoot : MonoBehaviour
 {
@@ -8,19 +9,10 @@ public class PlayerShoot : MonoBehaviour
     public GameObject bulletPrefab;
     public Camera cm;
 
-    void Start()
+    private void OnShoot(InputValue value) // OnDash //////////////////////////////////////////////////////////////////////////////////////////
     {
-    }
-
-
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            Shoot();
-        }
-
-        LookToCursor();
+        Debug.Log("a");
+        Shoot();
     }
 
     void LookToCursor()

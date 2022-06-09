@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class PlayerBasic : MonoBehaviour
+//gravity when is in bubble
+
+public class PlayerMove : MonoBehaviour
 {
-	/*
+
 	//PHYSICS
 	[Header("Gravity")]
 	public float gravityScale; //overrides rb.gravityScale
-	public float bubbleGravity; //gravity when is in bubble
+	public float fallGravityMult;
 	public float quickFallGravityMult; //not
 
 	[Header("Drag")]
@@ -71,12 +74,9 @@ public class PlayerBasic : MonoBehaviour
 	[Header("Other Settings")]
 	public bool doKeepRunMomentum; //player movement will not decrease speed if above maxSpeed, letting only drag do so. Allows for conservation of momentum
 	public bool doTurnOnWallJump; //player will rotate to face wall jumping direction
-	/// <summary>
-	/// /////////////////////////////////////////////////////////////////////////////
-	/// </summary>
 
 	#region COMPONENTS
-	public Rigidbody2D RB { get; private set; }
+	public Rigidbody2D rb { get; private set; }
 	#endregion
 
 	#region STATE PARAMETERS
@@ -87,8 +87,6 @@ public class PlayerBasic : MonoBehaviour
 
 	public float LastOnGroundTime { get; private set; }
 	public float LastOnWallTime { get; private set; }
-	public float LastOnWallRightTime { get; private set; }
-	public float LastOnWallLeftTime { get; private set; }
 
 	private float _wallJumpStartTime;
 	private int _lastWallJumpDir;
@@ -100,6 +98,7 @@ public class PlayerBasic : MonoBehaviour
 	#endregion
 
 	#region INPUT PARAMETERS
+	public Vector2 MoveInput { get; private set; }
 	public float LastPressedJumpTime { get; private set; }
 	public float LastPressedDashTime { get; private set; }
 	#endregion
@@ -119,17 +118,20 @@ public class PlayerBasic : MonoBehaviour
 	[SerializeField] private LayerMask _groundLayer;
 	#endregion
 
+	private PlayerControls controls;
+
 	private void Awake()
 	{
-		RB = GetComponent<Rigidbody2D>();
+		controls = new PlayerControls();
+		rb = GetComponent<Rigidbody2D>();
 	}
 
 	private void Start()
 	{
 		#region SETUP INPUTS
-		InputHandler.instance.OnJumpPressed += args => OnJump(args);
-		InputHandler.instance.OnJumpReleased += args => OnJumpUp(args);
-		InputHandler.instance.OnDash += args => OnDash(args);
+		//InputHandler.instance.OnJumpPressed += args => OnJump(args);
+		//InputHandler.instance.OnJumpReleased += args => OnJumpUp(args);
+		//InputHandler.instance.OnDash += args => OnDash(args);
 		#endregion
 
 		SetGravityScale(gravityScale);
@@ -141,16 +143,14 @@ public class PlayerBasic : MonoBehaviour
 		#region TIMERS
 		LastOnGroundTime -= Time.deltaTime;
 		LastOnWallTime -= Time.deltaTime;
-		LastOnWallRightTime -= Time.deltaTime;
-		LastOnWallLeftTime -= Time.deltaTime;
 
 		LastPressedJumpTime -= Time.deltaTime;
 		LastPressedDashTime -= Time.deltaTime;
 		#endregion
 
 		#region GENERAL CHECKS
-		if (InputHandler.instance.MoveInput.x != 0)
-			CheckDirectionToFace(InputHandler.instance.MoveInput.x > 0);
+		if (MoveInput.x != 0)
+			CheckDirectionToFace(MoveInput.x > 0);
 		#endregion
 
 		#region PHYSICS CHECKS
@@ -160,27 +160,18 @@ public class PlayerBasic : MonoBehaviour
 			if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer)) //checks if set box overlaps with ground
 				LastOnGroundTime = coyoteTime; //if so sets the lastGrounded to coyoteTime
 
-			//Right Wall Check
-			if ((Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && IsFacingRight)
-					|| (Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && !IsFacingRight))
-				LastOnWallRightTime = coyoteTime;
-
-			//Right Wall Check
-			if ((Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && !IsFacingRight)
-				|| (Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && IsFacingRight))
-				LastOnWallLeftTime = coyoteTime;
-
-			//Two checks needed for both left and right walls since whenever the play turns the wall checkPoints swap sides
-			LastOnWallTime = Mathf.Max(LastOnWallLeftTime, LastOnWallRightTime);
+			//Wall Check
+			if (Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer))
+				LastOnWallTime = coyoteTime;
 		}
 		#endregion
 
 		#region GRAVITY
 		if (!IsDashing)
 		{
-			if (RB.velocity.y >= 0 || IsWallJumping)
+			if (rb.velocity.y >= 0 || IsWallJumping)
 				SetGravityScale(gravityScale);
-			else if (InputHandler.instance.MoveInput.y < 0)
+			else if (MoveInput.y < 0)
 				SetGravityScale(gravityScale * quickFallGravityMult);
 			else
 				SetGravityScale(gravityScale * fallGravityMult);
@@ -188,8 +179,9 @@ public class PlayerBasic : MonoBehaviour
 		#endregion
 
 		#region JUMP CHECKS
-		if (IsJumping && RB.velocity.y < 0)
+		if (IsJumping && rb.velocity.y < 0)
 		{
+			Debug.Log("Hi2");
 			IsJumping = false;
 			//Debug.Break();
 		}
@@ -200,20 +192,20 @@ public class PlayerBasic : MonoBehaviour
 		if (!IsDashing)
 		{
 			//Jump
-			if (CanJump() && LastPressedJumpTime > 0)
-			{
-				IsJumping = true;
-				IsWallJumping = false;
-				Jump();
-			}
+			//if (CanJump() && LastPressedJumpTime < 0)
+			//{
+			//	IsJumping = true;
+			//	IsWallJumping = false;
+			//	Jump();
+			//}
 			//WALL JUMP
-			else if (CanWallJump() && LastPressedJumpTime > 0)
+			if (CanWallJump() && LastPressedJumpTime > 0)
 			{
 				IsWallJumping = true;
 				IsJumping = false;
 
 				_wallJumpStartTime = Time.time;
-				_lastWallJumpDir = (LastOnWallRightTime > 0) ? -1 : 1;
+				_lastWallJumpDir = (LastOnWallTime > 0) ? -1 : 1;
 
 				WallJump(_lastWallJumpDir);
 			}
@@ -236,8 +228,8 @@ public class PlayerBasic : MonoBehaviour
 
 		if (CanDash() && LastPressedDashTime > 0)
 		{
-			if (InputHandler.instance.MoveInput != Vector2.zero)
-				_lastDashDir = InputHandler.instance.MoveInput;
+			if (MoveInput != Vector2.zero)
+				_lastDashDir = MoveInput;
 			else
 				_lastDashDir = IsFacingRight ? Vector2.right : Vector2.left;
 
@@ -282,7 +274,7 @@ public class PlayerBasic : MonoBehaviour
 		#region SLIDE
 		if (LastOnWallTime > 0 && !IsJumping && !IsWallJumping && !IsDashing && LastOnGroundTime <= 0)
 		{
-			if ((LastOnWallLeftTime > 0 && InputHandler.instance.MoveInput.x < 0) || (LastOnWallRightTime > 0 && InputHandler.instance.MoveInput.x > 0))
+			if (MoveInput.x > 0) //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			{
 				Slide();
 			}
@@ -290,47 +282,70 @@ public class PlayerBasic : MonoBehaviour
 		#endregion
 	}
 
-	#region INPUT CALLBACKS
+	#region INPUT
 	//These functions are called when an even is triggered in my InputHandler. You could call these methods through a if(Input.GetKeyDown) in Update
-	public void OnJump(InputHandler.InputArgs args)
+	private void OnMove(InputValue value)
 	{
-		LastPressedJumpTime = jumpBufferTime;
+		MoveInput = value.Get<Vector2>();
 	}
 
-	public void OnJumpUp(InputHandler.InputArgs args)
+	private void OnJump(InputValue value)
+	{
+		if (CanJump())
+		{
+			IsJumping = true;
+			IsWallJumping = false;
+			Jump();
+		}
+		//LastPressedJumpTime = jumpBufferTime;
+	}
+
+	private void OnJumpUp(InputValue value)
 	{
 		if (CanJumpCut() || CanWallJumpCut())
 			JumpCut();
 	}
 
-	public void OnDash(InputHandler.InputArgs args)
+	private void OnShoot(InputValue value) // OnDash //////////////////////////////////////////////////////////////////////////////////////////
 	{
 		LastPressedDashTime = dashBufferTime;
 	}
 	#endregion
 
+	#region OnEnable/OnDisable
+	private void OnEnable()
+	{
+		controls.Enable();
+	}
+
+	private void OnDisable()
+	{
+		controls.Disable();
+	}
+	#endregion*/
+
 	#region MOVEMENT METHODS
 
 	public void SetGravityScale(float scale)
 	{
-		RB.gravityScale = scale;
+		rb.gravityScale = scale;
 	}
 
 	private void Drag(float amount)
 	{
-		Vector2 force = amount * RB.velocity.normalized;
-		force.x = Mathf.Min(Mathf.Abs(RB.velocity.x), Mathf.Abs(force.x)); //ensures we only slow the player down, if the player is going really slowly we just apply a force stopping them
-		force.y = Mathf.Min(Mathf.Abs(RB.velocity.y), Mathf.Abs(force.y));
-		force.x *= Mathf.Sign(RB.velocity.x); //finds direction to apply force
-		force.y *= Mathf.Sign(RB.velocity.y);
+		Vector2 force = amount * rb.velocity.normalized;
+		force.x = Mathf.Min(Mathf.Abs(rb.velocity.x), Mathf.Abs(force.x)); //ensures we only slow the player down, if the player is going really slowly we just apply a force stopping them
+		force.y = Mathf.Min(Mathf.Abs(rb.velocity.y), Mathf.Abs(force.y));
+		force.x *= Mathf.Sign(rb.velocity.x); //finds direction to apply force
+		force.y *= Mathf.Sign(rb.velocity.y);
 
-		RB.AddForce(-force, ForceMode2D.Impulse); //applies force against movement direction
+		rb.AddForce(-force, ForceMode2D.Impulse); //applies force against movement direction
 	}
 
 	private void Run(float lerpAmount)
 	{
-		float targetSpeed = InputHandler.instance.MoveInput.x * runMaxSpeed; //calculate the direction we want to move in and our desired velocity
-		float speedDif = targetSpeed - RB.velocity.x; //calculate difference between current velocity and desired velocity
+		float targetSpeed = MoveInput.x * runMaxSpeed; //calculate the direction we want to move in and our desired velocity
+		float speedDif = targetSpeed - rb.velocity.x; //calculate difference between current velocity and desired velocity
 
 		#region Acceleration Rate
 		float accelRate;
@@ -342,7 +357,7 @@ public class PlayerBasic : MonoBehaviour
 			accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? runAccel * accelInAir : runDeccel * deccelInAir;
 
 		//if we want to run but are already going faster than max run speed
-		if (((RB.velocity.x > targetSpeed && targetSpeed > 0.01f) || (RB.velocity.x < targetSpeed && targetSpeed < -0.01f)) && data.doKeepRunMomentum)
+		if (((rb.velocity.x > targetSpeed && targetSpeed > 0.01f) || (rb.velocity.x < targetSpeed && targetSpeed < -0.01f)) && doKeepRunMomentum)
 		{
 			accelRate = 0; //prevent any deceleration from happening, or in other words conserve are current momentum
 		}
@@ -354,7 +369,7 @@ public class PlayerBasic : MonoBehaviour
 		{
 			velPower = stopPower;
 		}
-		else if (Mathf.Abs(RB.velocity.x) > 0 && (Mathf.Sign(targetSpeed) != Mathf.Sign(RB.velocity.x)))
+		else if (Mathf.Abs(rb.velocity.x) > 0 && (Mathf.Sign(targetSpeed) != Mathf.Sign(rb.velocity.x)))
 		{
 			velPower = turnPower;
 		}
@@ -366,19 +381,26 @@ public class PlayerBasic : MonoBehaviour
 
 		// applies acceleration to speed difference, then is raised to a set power so the acceleration increases with higher speeds, finally multiplies by sign to preserve direction
 		float movement = Mathf.Pow(Mathf.Abs(speedDif) * accelRate, velPower) * Mathf.Sign(speedDif);
-		movement = Mathf.Lerp(RB.velocity.x, movement, lerpAmount); // lerp so that we can prevent the Run from immediately slowing the player down, in some situations eg wall jump, dash 
+		movement = Mathf.Lerp(rb.velocity.x, movement, lerpAmount); // lerp so that we can prevent the Run from immediately slowing the player down, in some situations eg wall jump, dash 
 
-		RB.AddForce(movement * Vector2.right); // applies force force to rigidbody, multiplying by Vector2.right so that it only affects X axis 
+		rb.AddForce(movement * Vector2.right); // applies force force to rigidbody, multiplying by Vector2.right so that it only affects X axis 
 
-		if (InputHandler.instance.MoveInput.x != 0)
-			CheckDirectionToFace(InputHandler.instance.MoveInput.x > 0);
+		if (MoveInput.x != 0)
+			CheckDirectionToFace(MoveInput.x > 0);
 	}
 
 	private void Turn()
 	{
-		Vector3 scale = transform.localScale; //stores scale and flips x axis, "flipping" the entire gameObject around. (could rotate the player instead)
-		scale.x *= -1;
-		transform.localScale = scale;
+		Quaternion rotation = transform.localRotation; //stores rotation and rotate y axis
+		if(IsFacingRight)
+        {
+			rotation.y = 180;
+		} else
+        {
+			rotation.y = 0;
+        }
+
+		transform.localRotation = rotation;
 
 		IsFacingRight = !IsFacingRight;
 	}
@@ -391,10 +413,10 @@ public class PlayerBasic : MonoBehaviour
 
 		#region Perform Jump
 		float force = jumpForce;
-		if (RB.velocity.y < 0)
-			force -= RB.velocity.y;
+		if (rb.velocity.y < 0)
+			force -= rb.velocity.y;
 
-		RB.AddForce(Vector2.up * force, ForceMode2D.Impulse);
+		rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
 		#endregion
 	}
 
@@ -403,37 +425,36 @@ public class PlayerBasic : MonoBehaviour
 		//ensures we can't call a jump multiple times from one press
 		LastPressedJumpTime = 0;
 		LastOnGroundTime = 0;
-		LastOnWallRightTime = 0;
-		LastOnWallLeftTime = 0;
+		LastOnWallTime = 0;
 
 		#region Perform Wall Jump
 		Vector2 force = new Vector2(wallJumpForce.x, wallJumpForce.y);
 		force.x *= dir; //apply force in opposite direction of wall
 
-		if (Mathf.Sign(RB.velocity.x) != Mathf.Sign(force.x))
-			force.x -= RB.velocity.x;
+		if (Mathf.Sign(rb.velocity.x) != Mathf.Sign(force.x))
+			force.x -= rb.velocity.x;
 
-		if (RB.velocity.y < 0) //checks whether player is falling, if so we subtract the velocity.y (counteracting force of gravity). This ensures the player always reaches our desired jump force or greater
-			force.y -= RB.velocity.y;
+		if (rb.velocity.y < 0) //checks whether player is falling, if so we subtract the velocity.y (counteracting force of gravity). This ensures the player always reaches our desired jump force or greater
+			force.y -= rb.velocity.y;
 
-		RB.AddForce(force, ForceMode2D.Impulse);
+		rb.AddForce(force, ForceMode2D.Impulse);
 		#endregion
 	}
 
 	private void JumpCut()
 	{
 		//applies force downward when the jump button is released. Allowing the player to control jump height
-		RB.AddForce(Vector2.down * RB.velocity.y * (1 - jumpCutMultiplier), ForceMode2D.Impulse);
+		rb.AddForce(Vector2.down * rb.velocity.y * (1 - jumpCutMultiplier), ForceMode2D.Impulse);
 	}
 
 	private void Slide()
 	{
 		//works the same as the Run but only in the y-axis
 		float targetSpeed = 0;
-		float speedDif = targetSpeed - RB.velocity.y;
+		float speedDif = targetSpeed - rb.velocity.y;
 
 		float movement = Mathf.Pow(Mathf.Abs(speedDif) * slideAccel, slidePower) * Mathf.Sign(speedDif);
-		RB.AddForce(movement * Vector2.up, ForceMode2D.Force);
+		rb.AddForce(movement * Vector2.up, ForceMode2D.Force);
 	}
 
 	private void StartDash(Vector2 dir)
@@ -443,7 +464,7 @@ public class PlayerBasic : MonoBehaviour
 
 		SetGravityScale(0);
 
-		RB.velocity = dir.normalized * dashSpeed;
+		rb.velocity = dir.normalized * dashSpeed;
 	}
 
 	private void StopDash(Vector2 dir)
@@ -453,9 +474,9 @@ public class PlayerBasic : MonoBehaviour
 		if (dir.y > 0)
 		{
 			if (dir.x == 0)
-				RB.AddForce(Vector2.down * RB.velocity.y * (1 - dashUpEndMult), ForceMode2D.Impulse);
+				rb.AddForce(Vector2.down * rb.velocity.y * (1 - dashUpEndMult), ForceMode2D.Impulse);
 			else
-				RB.AddForce(Vector2.down * RB.velocity.y * (1 - dashUpEndMult) * .7f, ForceMode2D.Impulse);
+				rb.AddForce(Vector2.down * rb.velocity.y * (1 - dashUpEndMult) * .7f, ForceMode2D.Impulse);
 		}
 	}
 	#endregion
@@ -469,23 +490,25 @@ public class PlayerBasic : MonoBehaviour
 
 	private bool CanJump()
 	{
-		return LastOnGroundTime > 0 && !IsJumping;
+
+		Debug.Log(!IsJumping);
+		Debug.Log(LastOnGroundTime);
+		return LastOnGroundTime >= 0 && !IsJumping;
 	}
 
 	private bool CanWallJump()
 	{
-		return LastPressedJumpTime > 0 && LastOnWallTime > 0 && LastOnGroundTime <= 0 && (!IsWallJumping ||
-			 (LastOnWallRightTime > 0 && _lastWallJumpDir == 1) || (LastOnWallLeftTime > 0 && _lastWallJumpDir == -1));
+		return LastPressedJumpTime > 0 && LastOnWallTime > 0 && LastOnGroundTime <= 0 && _lastWallJumpDir == 1;
 	}
 
 	private bool CanJumpCut()
 	{
-		return IsJumping && RB.velocity.y > 0;
+		return IsJumping && rb.velocity.y > 0;
 	}
 
 	private bool CanWallJumpCut()
 	{
-		return IsWallJumping && RB.velocity.y > 0;
+		return IsWallJumping && rb.velocity.y > 0;
 	}
 
 	private bool CanDash()
@@ -500,5 +523,5 @@ public class PlayerBasic : MonoBehaviour
 	{
 		return IsDashing && Time.time - _dashStartTime > dashAttackTime;
 	}
-	#endregion*/
+	#endregion
 }
