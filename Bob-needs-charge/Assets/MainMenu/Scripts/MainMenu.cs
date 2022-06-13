@@ -5,10 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+
+    [SerializeField] private LoadFade fadeAnimation;
     
     public void PlayGame()
     {
-        SceneManager.LoadScene("Game");
+        fadeAnimation.LoadSceneFade("Game");
     }
 
     public void QuitGame()

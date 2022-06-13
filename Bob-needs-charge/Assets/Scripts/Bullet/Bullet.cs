@@ -7,14 +7,18 @@ public class Bullet : MonoBehaviour
 
     public float speed = 15f;
     public float maxTime = 1;
-    public Rigidbody2D rb;
+    public float delayDestroy = 0.1f;
 
-    float delayDestroy = 0.1f;
+    private Animator bulletAnimationControler;
+    private Rigidbody2D rb;
+
     float interval;
 
 
     void Start()
     {
+        rb = gameObject.GetComponent<Rigidbody2D>();
+        bulletAnimationControler = GetComponent<Animator>();
         rb.velocity = transform.right * speed;
     }
 
@@ -22,7 +26,8 @@ public class Bullet : MonoBehaviour
     {
         if(interval > maxTime)
         {
-            Destroy(gameObject);
+            bulletAnimationControler.SetBool("destroy", true);
+            Destroy(gameObject, delayDestroy);
         } else
         {
             interval += Time.deltaTime;
@@ -33,6 +38,8 @@ public class Bullet : MonoBehaviour
     {
         if(!collision.CompareTag("Player"))
         {
+            bulletAnimationControler.SetBool("destroy", true);
+            rb.velocity = transform.right * 0.05f;
             Destroy(gameObject, delayDestroy);
         }
     }

@@ -1,0 +1,286 @@
+fileFormatVersion: 2
+guid: a9a9c9a211d384e4da8f8dfd84bf2cbe
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 16
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: calico_000_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bafe043fbb03a8b48bd6baa6b406e76d
+      internalID: -661550777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: calico_000_10
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9dd1ea8ce78363d49b5bb8ad19f0e041
+      internalID: 1782076767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: calico_000_11
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab0bdfa8971e2db439a8a81a023b2190
+      internalID: 115922636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: calico_000_12
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58bd0d127da23e343a8565e242c925e3
+      internalID: -106176067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      calico_000_57: -560047852
+      calico_000_68: 1479070112
+      calico_000_0: -457356192
+      calico_000_39: 202797491
+      calico_000_75: 1810634683
+      calico_000_26: 265666987
+      calico_000_61: 912512070
+      calico_000_6: -1059647825
+      calico_000_63: 1158460493
+      calico_000_70: 371639908
+      calico_000_65: 102547956
+      calico_000_21: -139336784
+      calico_000_49: 1361081758
+      calico_000_30: 1362912167
+      calico_000_5: -1310627519
+      calico_000_60: 484165230
+      calico_000_24: -570908293
+      calico_000_71: 522430203
+      calico_000_35: -1417629236
+      calico_000_10: 1782076767
+      calico_000_22: 822568524
+      calico_000_38: 1012404679
+      calico_000_44: 1514611579
+      calico_000_53: 520522815
+      calico_000_14: -139251414
+      calico_000_42: -17578969
+      calico_000_40: -350444174
+      calico_000_1: 803012481
+      calico_000_4: -744654778
+      calico_000_32: -1045104496
+      calico_000_16: -428748773
+      calico_000_2: 1686106208
+      calico_000_34: -1535720595
+      calico_000_62: 227880650
+      calico_000_67: 1683278891
+      calico_000_36: -1080616526
+      calico_000_27: -697872239
+      calico_000_17: -118238682
+      calico_000_23: -1998532648
+      calico_000_3: -1933656097
+      calico_000_66: 1529677864
+      calico_000_18: -938814227
+      calico_000_51: -739341174
+      calico_000_25: -24685107
+      calico_000_69: 1333668947
+      calico_000_74: -430706505
+      calico_000_58: 955661635
+      calico_000_41: -2069519594
+      calico_000_7: 16536833
+      calico_000_59: -1195326838
+      calico_000_8: 676518080
+      calico_000_73: -831240307
+      calico_000_20: 724053700
+      calico_000_13: -1840828681
+      calico_000_52: 681030211
+      calico_000_33: -1569602760
+      calico_000_15: 693286033
+      calico_000_72: -1985865388
+      calico_000_54: -719228217
+      calico_000_47: 1820875471
+      calico_000_12: -106176067
+      calico_000_9: -661550777
+      calico_000_28: -1317627125
+      calico_000_77: -1495356096
+      calico_000_55: 1629265141
+      calico_000_19: 1788004314
+      calico_000_43: 829500093
+      calico_000_56: 296525653
+      calico_000_31: -533202800
+      calico_000_50: -739936976
+      calico_000_29: 844302268
+      calico_000_48: -1767229897
+      calico_000_11: 115922636
+      calico_000_46: -284377512
+      calico_000_76: 667117651
+      calico_000_78: -1647516837
+      calico_000_64: 1618690861
+      calico_000_37: -1104480417
+      calico_000_45: 1093130065
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

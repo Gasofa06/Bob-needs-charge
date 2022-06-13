@@ -181,7 +181,6 @@ public class PlayerMove : MonoBehaviour
 		#region JUMP CHECKS
 		if (IsJumping && rb.velocity.y < 0)
 		{
-			Debug.Log("Hi2");
 			IsJumping = false;
 			//Debug.Break();
 		}
@@ -306,7 +305,7 @@ public class PlayerMove : MonoBehaviour
 			JumpCut();
 	}
 
-	private void OnShoot(InputValue value) // OnDash //////////////////////////////////////////////////////////////////////////////////////////
+	private void OnDash(InputValue value)
 	{
 		LastPressedDashTime = dashBufferTime;
 	}
@@ -490,9 +489,6 @@ public class PlayerMove : MonoBehaviour
 
 	private bool CanJump()
 	{
-
-		Debug.Log(!IsJumping);
-		Debug.Log(LastOnGroundTime);
 		return LastOnGroundTime >= 0 && !IsJumping;
 	}
 
